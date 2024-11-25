@@ -1,11 +1,10 @@
-package com.example.demo.Entity;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CollectionId;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -26,7 +25,7 @@ public class User {
     @Column(length = 15, nullable = false)
     private String loginId;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 255, nullable = false) // BCryptPasswordEncoder로 비밀번호를 암호화 할 때 60자로 길어진다.
     private String password;
 
     @Column(length = 40, nullable = false)
@@ -39,7 +38,14 @@ public class User {
 
     private String profileImage;
 
-    @Column(length = 15, nullable = false)
+    @Column(length = 15, nullable = false, unique = true)
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+
+    public Role getRole() {
+        return this.role;
+    }
 }

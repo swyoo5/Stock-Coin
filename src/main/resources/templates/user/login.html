@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="login-container">
+  <h1>Login</h1>
+  <form action="/loginProcess" method="POST">
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+      <button type="submit">Login</button>
+    </div>
+  </form>
+
+  <div th:if="${param.error}">
+    <p style="color:red;">Invalid username or password</p>
+  </div>
+
+  <p>Don't have an account? <a href="/user/signup">Sign up here</a></p>
+</div>
+</body>
+</html>

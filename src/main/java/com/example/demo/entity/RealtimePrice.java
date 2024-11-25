@@ -1,10 +1,11 @@
-package com.example.demo.Entity;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -13,20 +14,19 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAsset {
+public class RealtimePrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
-    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
 
-    private float quantity;
+    private float currentPrice;
 
-    private float averagePrice;
+    private float changePercentage;
 
-    private LocalDateTime purchaseDate;
+    @UpdateTimestamp // 갱신될 때마다 실시간 시간 반영
+    private LocalDateTime updateDate;
 }

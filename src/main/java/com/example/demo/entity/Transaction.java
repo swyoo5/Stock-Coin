@@ -1,11 +1,14 @@
-package com.example.demo.Entity;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,11 +33,11 @@ public class Transaction {
 
     private float quantity;
 
-    private float pricePerUnit;
+    private BigDecimal pricePerUnit;
 
-    private float totalPrice;
+    private BigDecimal totalPrice;
 
+    @CreationTimestamp
+    @DateTimeFormat(pattern = "yyyy-MM-hh")
     private LocalDateTime transactionDate;
-
-    private LocalDateTime regDate;
 }
