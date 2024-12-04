@@ -21,14 +21,18 @@ public class UserAsset {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id", nullable = false)
     private User user;
 
     @OneToOne(fetch = FetchType.LAZY)
+
     private Asset asset;
 
     private float quantity;
 
     private float averagePrice;
+
+    private String unitCurrency;
 
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd")

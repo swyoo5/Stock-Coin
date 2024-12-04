@@ -26,5 +26,8 @@ public class Asset {
     @Column(length = 20, nullable = false)
     private String ticker;
 
+    public Asset(String ticker) {
+        this.ticker = ticker;
+    }
 //    private LocalDateTime regdate;
 }

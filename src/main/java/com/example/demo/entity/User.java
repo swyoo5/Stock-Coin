@@ -45,7 +45,7 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    public Role getRole() {
-        return this.role;
-    }
+//    public Role getRole() {
+//        return this.role;
+//    }
 }

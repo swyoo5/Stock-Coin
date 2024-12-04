@@ -5,7 +5,7 @@ import com.example.demo.entity.User;
 import java.util.Optional;
 
 public interface UserService {
-    void registerUser(User user);
+    void registerUser(String loginId, String password, String email, String nickname);
     Optional<User> findByLoginId(String LoginId);
     boolean existsByLoginId(String LoginId);
 }

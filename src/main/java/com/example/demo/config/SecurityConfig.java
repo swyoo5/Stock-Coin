@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                         // 작성된 경로에 대한 접근을 모든 사용자에게 허용
-                        .requestMatchers("/login", "/sinup", "/user/**", "/").permitAll()
+                        .requestMatchers("/login", "/signup", "/user/**", "/").permitAll()
                         // 해당 경로에 접근하려면 admin 권한이 있어야 함
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         // 나머지 모든 요청은 인증된 사용자만 접근
