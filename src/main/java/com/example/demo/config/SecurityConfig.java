@@ -15,22 +15,45 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
     @Bean
-    public CorsFilter corsFilter() {
+    // CORS 정책을 설정하는 빈
+    public CorsConfigurationSource corsConfigurationSource() {
+        // CORS 객체 생성
+        CorsConfiguration configuration = new CorsConfiguration();
+        // 자격 증명을 허용
+        configuration.setAllowCredentials(true);
+        // React 앱과 같은 외부 도메인 허용
+        configuration.addAllowedOrigin("http://localhost:3000");
+        // 모든 헤더를 허용
+        configuration.addAllowedHeader("*");
+        // 모든 HTTP 메서드 허용
+        configuration.addAllowedMethod("*");
+        // URL 기반 CORS 설정을 등록하고 반환. 모든 경로에 대해 CORS 정책을 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    // 필터체인 정의
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+        http
+                // CORS 설정을 적용
+                .cors(httpSecurityCorsConfigurer ->
+                        httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource))
+                // CSRF 보호 비활성화
+                .csrf(csrf -> csrf.disable())
+                // 모든 요청에 대해 접근을 허용
+                .authorizeRequests(auth -> auth
+                        .anyRequest().permitAll());
+        return http.build();
     }
 
     @Bean
@@ -83,8 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsService userDetailService, AuthenticationManagerBuilder authenticationManagerBuilder)
-    throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
 //        AuthenticationManagerBuilder authenticationMangerBuilder =
 //                http.getSharedObject(AuthenticationManagerBuilder.class);
 //        // 사용자 정보를 userDetailsService에서 로드 & 비밀번호를 비교할 때 암호화된 비밀번호를 사용할 수 있도록 설정
