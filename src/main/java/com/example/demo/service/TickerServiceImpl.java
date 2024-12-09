@@ -13,14 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 // 종목 현재가
 @Service
 public class TickerServiceImpl implements TickerService {
-    private final OkHttpClient client = new OkHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+//    private final OkHttpClient client = new OkHttpClient();
+//    private final ObjectMapper objectMapper = new ObjectMapper();
     private final UpbitFeignClient upbitFeignClient;
 
     @Autowired
@@ -48,6 +49,24 @@ public class TickerServiceImpl implements TickerService {
 //        }
 
     public List<Map<String, Object>> getUpbitPrice(String markets) {
-        return upbitFeignClient.getUpBitPriceList(markets);
+        try {
+//            System.out.println("Fetching markets : " + markets);
+            String[] marketArray = markets.split(",");
+            List<Map<String, Object>> results = new ArrayList<>();
+
+            for (String market : marketArray) {
+                try {
+//                    System.out.println("Fetching upbit price for market : " + market);
+                    results.addAll(upbitFeignClient.getUpBitPriceList(market));
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    System.err.println("Error fetching price for market : " + ", Error : " + e.getMessage());
+                }
+            }
+            return results;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+//        return upbitFeignClient.getUpBitPriceList(markets);
     }
 }

@@ -26,6 +26,7 @@ public class TickerController {
 
     @GetMapping("/ticker")
     public List<Map<String, Object>> getUpbitTickerPrice(@RequestParam String ticker) {
+//        System.out.println("Received ticker request : " + ticker);
         return tickerService.getUpbitPrice(ticker);
     }
 }
