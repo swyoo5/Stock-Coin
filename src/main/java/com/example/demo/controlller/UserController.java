@@ -1,20 +1,27 @@
 package com.example.demo.controlller;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/me")
+    public UserDTO getCurrentUser(Authentication authentication) {
+        String loginId = authentication.getName();
+        return userService.getUserInfo(loginId);
+    }
 
     @GetMapping("/login")
     public String login() {

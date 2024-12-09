@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
@@ -15,6 +16,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Override
+    public UserDTO getUserInfo(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+
+        return UserDTO.builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build();
+    }
     @Override
     public void registerUser(String loginId,
                              String password,

@@ -22,7 +22,7 @@ public class Chatroom {
     private long chatRoomId;
 
     @Column(length = 255, nullable = false)
-    private String name;
+    private String name; // 채팅방 이름을 ticker명과 매핑시킴
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created_date", nullable = false)
