@@ -5,6 +5,8 @@ import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -18,9 +20,17 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public UserDTO getCurrentUser(Authentication authentication) {
-        String loginId = authentication.getName();
-        return userService.getUserInfo(loginId);
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+        try {
+            String loginId = authentication.getName();
+            UserDTO user = userService.getUserInfo(loginId);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching user info");
+        }
     }
 
     @GetMapping("/login")

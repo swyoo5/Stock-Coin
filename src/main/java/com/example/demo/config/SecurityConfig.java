@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -41,20 +42,20 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
-    // 필터체인 정의
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
-        http
-                // CORS 설정을 적용
-                .cors(httpSecurityCorsConfigurer ->
-                        httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource))
-                // CSRF 보호 비활성화
-                .csrf(csrf -> csrf.disable())
-                // 모든 요청에 대해 접근을 허용
-                .authorizeRequests(auth -> auth
-                        .anyRequest().permitAll());
-        return http.build();
-    }
+//    @Bean
+//    // 필터체인 정의
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+//        http
+//                // CORS 설정을 적용
+//                .cors(httpSecurityCorsConfigurer ->
+//                        httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource))
+//                // CSRF 보호 비활성화
+//                .csrf(csrf -> csrf.disable())
+//                // 모든 요청에 대해 접근을 허용
+//                .authorizeRequests(auth -> auth
+//                        .anyRequest().permitAll());
+//        return http.build();
+//    }
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -64,24 +65,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 // csrf 방어를 비활성화 -> 보안이 중요한 앱에서는 보호를 유지해야함
                 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
                 // corf 비활성화 => 브라우저의 동일 출처 정책을 제어
-                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable())
+                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 // forward 요청에 대해 모든 사용자가 접근 가능
                 .authorizeHttpRequests(authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
-                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+//                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         // 작성된 경로에 대한 접근을 모든 사용자에게 허용
-                        .requestMatchers("/login", "/signup", "/user/**", "/").permitAll()
+                        .requestMatchers("/api/user/login", "/api/user/signup", "/loginProcess", "/static/**", "/api/chart").permitAll()
                         // 해당 경로에 접근하려면 admin 권한이 있어야 함
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         // 나머지 모든 요청은 인증된 사용자만 접근
                         .anyRequest().authenticated())
                 .formLogin(formLoginConfigurer -> formLoginConfigurer
                         // 사용자 정의 로그인 페이지 설정
-                        .loginPage("/user/login")
+                        .loginPage("/api/user/login")
                         // 로그인 처리를 수행할 URL 입력
                         .loginProcessingUrl("/loginProcess")
                         // 로그인 폼에서 사용자 이름 입력 필드의 이름 지정
@@ -89,7 +93,7 @@ public class SecurityConfig {
                         // 로그인 폼에서 비밀번호 입력 필드의 이름을 지정
                         .passwordParameter("password")
                         // 로그인 성공 시 이동할 기본 페이지
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("http://localhost:3000", true)
                         .permitAll())
                 // 로그아웃 설정
                 .logout(logoutConfigurer -> logoutConfigurer

@@ -15,6 +15,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //        클라이언트가 접속할 엔드포인트 설정
         registry.addEndpoint("/ws")
                 .setAllowedOrigins("http://localhost:3000")
+                .addInterceptors(new WebSocketHandShakeInterceptor())
                 .withSockJS();
     }
 

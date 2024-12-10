@@ -31,19 +31,24 @@ public class ChatServiceImpl {
                     Chatroom newRoom = Chatroom.builder()
                             .name(dto.getTicker())
                             .build();
+                    System.out.println("New room: " + newRoom.getName());
                     return chatRoomRepository.save(newRoom);
                 });
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("You are not authenticated");
+        }
+        System.out.println("ChatService Authentication : " + authentication);
         String loginId = authentication.getName();
         // sender로 user 조회, 없으면 생성
         User user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new RuntimeException(("로그인한 사용자를 찾을 수 없습니다")));
-//        User user = userRepository.findByNickname(dto.getSender())
+//        User user = userRepository.findByNickname(loginId)
 //                .orElseGet(() -> {
 //                    User newUser = User.builder()
 //                            .nickname(dto.getSender())
-//                            .loginId("tempId")
+//                            .loginId(loginId)
 //                            .password("tempPassword")
 //                            .email("tempEmail@example.com")
 //                            .role(Role.ROLE_USER)
@@ -51,12 +56,14 @@ public class ChatServiceImpl {
 //                    return userRepository.save(newUser);
 //                });
 
+        System.out.println("Sender : " + user.getNickname());
         ChatMessage chatMessage = ChatMessage.builder()
                 .chatRoom(chatroom)
                 .sender(user)
                 .content(dto.getContent())
                 .build();
 
+        System.out.println("saved chatmessage : " + chatMessage);
         return chatMessageRepository.save(chatMessage);
     }
 }
